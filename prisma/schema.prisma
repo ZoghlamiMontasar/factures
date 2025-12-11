@@ -6,7 +6,7 @@ generator client {
 }
 
 datasource db {
-  provider = "sqlite"
+  provider = "postgresql"
   url      = env("DATABASE_URL")
 }
 
@@ -29,7 +29,7 @@ model Invoice {
   invoiceDate   String        @default("")
   dueDate       String        @default("")
   vatActive     Boolean       @default(false)
-  vatRate       Float         @default(20)
+  vatRate       Float         @default(0)
   status        Int           @default(1)
   lines         InvoiceLine[] @relation("InvoiceLines")
   userId        String
