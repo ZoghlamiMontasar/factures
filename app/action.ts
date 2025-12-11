@@ -2,6 +2,7 @@
 
 import { randomBytes } from "crypto";
 import prisma from "./lib/prisma";
+import { Invoice } from "../type";
 
 export async function checkAndAddUser(email: string , name:string) {
     if (!email) return;
@@ -76,15 +77,15 @@ export async function getInvoicesByEmail(email: string) {
     try {
         const user = await prisma.user.findUnique({
             where: {
-                email: email
+                email: email,
             },
             include : {
                 invoices : {
                     include :{
-                        lines: true
-                    }
-                }
-            }
+                        lines: true,
+                    },
+                },
+            },
         })
         if(user) {
             const today = new Date()
@@ -123,6 +124,109 @@ export async function getInvoiceById(invoiceId : string){
             throw new Error("Facture non trouvée.")
         }
         return invoice
+    } catch (error) {
+        console.error(error)
+    }
+}
+export async function updateInvoice(invoice : Invoice) {
+  try {
+    // 1. Fetch the existing invoice from the database with its lines
+    const existingInvoice = await prisma.invoice.findUnique({
+      where: { id: invoice.id },
+       include: {
+        lines: true,
+      },
+    })
+
+    // 2. If invoice does not exist, throw an error
+    if (!existingInvoice) {
+      throw new Error(`Facture avec l'ID ${invoice.id} introuvable.`);
+    }
+
+    // 3. Update the left-level invoice fields (not the lines)
+    await prisma.invoice.update({
+      where: { id: invoice.id },
+      data: {
+        issuerName: invoice.issuerName,
+        issuerAddress: invoice.issuerAddress,
+        clientName: invoice.clientName,
+        clientAddress: invoice.clientAddress,
+        invoiceDate: invoice.invoiceDate,
+        dueDate: invoice.dueDate,
+        vatActive: invoice.vatActive,
+        vatRate: invoice.vatRate,
+        status: invoice.status,
+      },
+    })
+
+    // Store old lines from DB and new lines from frontend
+    const existingLines = existingInvoice.lines
+    // DB lines
+    const receivedLines = invoice.lines
+     // frontend lines
+
+    // 4. Find lines that exist in DB but not in the updated invoice → should be deleted
+    const linesToDelete = existingLines.filter(
+      (existingLine) =>
+        !receivedLines.some((line   => line.id === existingLine.id)
+    ))
+
+    // 5. Delete removed lines
+    if (linesToDelete.length > 0) {
+      await prisma.invoiceLine.deleteMany({
+        where: {
+          id: { in: linesToDelete.map((line) => line.id) },
+        },
+      });
+    }
+
+    // 6. Loop through each updated/received line
+    for (const line of receivedLines) {
+      // Check if this line already exists in the DB
+      const existingLine = existingLines.find((l) => l.id == line.id);
+      if (existingLine) {
+        // 7. Line exists → check if something changed
+        const hasChanged =
+          line.description !== existingLine.description ||
+          line.quantity !== existingLine.quantity ||
+          line.unitPrice !== existingLine.unitPrice;
+
+        // If changed → update the line
+        if (hasChanged) {
+          await prisma.invoiceLine.update({
+            where: { id: line.id },
+            data: {
+              description: line.description,
+              quantity: line.quantity,
+              unitPrice: line.unitPrice,
+            }
+          })
+        }
+      } else {
+        // 8. Line did not exist → it's a NEW line → create it
+        await prisma.invoiceLine.create({
+          data: {
+            description: line.description,
+            quantity: line.quantity,
+            unitPrice: line.unitPrice,
+            invoiceId: invoice.id // link to the parent invoice
+          }
+        })
+      }
+    }
+  } catch (error) {
+    console.error(error);
+  }
+}
+
+export async function deleteInvoice(invoiceId: string) {
+    try {
+        const deleteInvoice = await prisma.invoice.delete({
+            where: { id: invoiceId }
+        })
+        if (!deleteInvoice) {
+            throw new Error("Erreur lors de la suppression de la facture.");
+        }
     } catch (error) {
         console.error(error)
     }

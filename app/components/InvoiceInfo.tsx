@@ -10,7 +10,7 @@ interface Props{
 
 const InvoiceInfo : React.FC<Props>= ({invoice , setInvoice}) => {
 
-    const handeleInputChange = ( e: React.ChangeEvent<HTMLInputElement | 
+    const handleInputChange = ( e: React.ChangeEvent<HTMLInputElement | 
         HTMLTextAreaElement> , field : string) => {
             setInvoice({...invoice, [field] : e.target.value})
         };
@@ -24,15 +24,15 @@ const InvoiceInfo : React.FC<Props>= ({invoice , setInvoice}) => {
                 placeholder="Nom de l'entreprise émettrice"
                 className='input input-bordered w-full resize-none'
                 required
-                onChange = {(e) => handeleInputChange(e , 'issuerName')}
+                onChange = {(e) => handleInputChange(e , 'issuerName')}
                 />
                 <textarea 
                 value = {invoice?.issuerAddress}
-                placeholder="Address de l'entreprise émetrice"
+                placeholder="Address de l'entreprise emetteur"
                 className='textarea textarea-bordered w-full resize-none h-40'
                 aria-rowcount={5}
                 required
-                onChange = {(e) => handeleInputChange(e , 'issureAddress')}
+                onChange = {(e) => handleInputChange(e , 'issuerAddress')}
                 ></textarea>
 
                 <h2 className="badge badge-accent">Client</h2>
@@ -41,7 +41,7 @@ const InvoiceInfo : React.FC<Props>= ({invoice , setInvoice}) => {
                 placeholder="Nom de l'entreprise cliente"
                 className='input input-bordered w-full resize-none'
                 required
-                onChange = {(e) => handeleInputChange(e , 'clientName')}
+                onChange = {(e) => handleInputChange(e , 'clientName')}
                 />
                 <textarea 
                 value = {invoice?.clientAddress}
@@ -49,7 +49,7 @@ const InvoiceInfo : React.FC<Props>= ({invoice , setInvoice}) => {
                 className='textarea textarea-bordered w-full resize-none h-40'
                 aria-rowcount={5}
                 required
-                onChange = {(e) => handeleInputChange(e , 'clientAddress')}
+                onChange = {(e) => handleInputChange(e , 'clientAddress')}
                 ></textarea>
 
                 <h2 className="badge badge-accent">Date de la Facture</h2>
@@ -57,7 +57,7 @@ const InvoiceInfo : React.FC<Props>= ({invoice , setInvoice}) => {
                 value = {invoice?.invoiceDate} 
                 className='input input-bordered w-full resize-none'
                 required
-                onChange = {(e) => handeleInputChange(e , 'invoiceDate')}
+                onChange = {(e) => handleInputChange(e , 'invoiceDate')}
                 />
 
                  <h2 className="badge badge-accent">Date d'échéance</h2>
@@ -65,7 +65,7 @@ const InvoiceInfo : React.FC<Props>= ({invoice , setInvoice}) => {
                 value = {invoice?.dueDate} 
                 className='input input-bordered w-full resize-none'
                 required
-                onChange = {(e) => handeleInputChange(e , 'dueDate')}
+                onChange = {(e) => handleInputChange(e , 'dueDate')}
                 />
             </div>
     </div>
