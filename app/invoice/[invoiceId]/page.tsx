@@ -146,15 +146,15 @@ const page = ({params} : {params:Promise<{invoiceId : string}>}) => {
                         </div>
                         <div className='flex justify-between'>
                             <span> Totals Hors Taxes </span>
-                            <span> {totals.totalHT.toFixed(2)} £ </span>
+                            <span> {totals.totalHT.toFixed(2)} DT </span>
                         </div>
                         <div className='flex justify-between'>
                             <span> TVA ({invoice?.vatActive ? `${invoice?.vatRate}` : "0"} % ) </span>
-                            <span> {totals.totalVAT.toFixed(2)} £ </span>
+                            <span> {totals.totalVAT.toFixed(2)} DT </span>
                         </div>
                         <div className='flex justify-between font-bold'>
                             <span> Total TTC</span>
-                            <span> {totals.totalTTC.toFixed(2)} £ </span>
+                            <span> {totals.totalTTC.toFixed(2)} DT </span>
                         </div>
                      </div>
                      <InvoiceInfo invoice={invoice} setInvoice={setInvoice}/>

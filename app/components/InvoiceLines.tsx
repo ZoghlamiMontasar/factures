@@ -99,7 +99,7 @@ const InvoiceLines : React.FC<Props>= ({invoice , setInvoice}) =>  {
                                     />
                                 </td>
                                 <td className='font-bold'>
-                                    {(line.quantity * line.unitPrice).toFixed(2)} £
+                                    {(line.quantity * line.unitPrice).toFixed(2)} DT
                                 </td>
                                 <td>
                                     <button onClick={() => handledRemoveLine(index ) }
